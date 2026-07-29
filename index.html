@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Balloon Pop Game</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#4facfe,#00f2fe);
+    overflow:hidden;
+}
+
+h1{
+    text-align:center;
+    color:white;
+    margin-top:15px;
+}
+
+.info{
+    display:flex;
+    justify-content:center;
+    gap:50px;
+    color:white;
+    font-size:24px;
+    margin:15px;
+    font-weight:bold;
+}
+
+#game{
+    position:relative;
+    width:100vw;
+    height:80vh;
+}
+
+.balloon{
+    position:absolute;
+    width:70px;
+    height:90px;
+    background:red;
+    border-radius:50%;
+    cursor:pointer;
+    animation:popUp 6s linear forwards;
+}
+
+.balloon::after{
+    content:"";
+    position:absolute;
+    width:2px;
+    height:35px;
+    background:white;
+    left:34px;
+    top:90px;
+}
+
+@keyframes popUp{
+    from{
+        transform:translateY(100vh);
+    }
+    to{
+        transform:translateY(-120vh);
+    }
+}
+
+#message{
+    position:absolute;
+    top:45%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    color:white;
+    font-size:40px;
+    display:none;
+    text-align:center;
+}
+
+button{
+    margin-top:20px;
+    padding:12px 25px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🎈 Balloon Pop Game</h1>
+
+<div class="info">
+<div>Score: <span id="score">0</span></div>
+<div>Time: <span id="time">30</span>s</div>
+</div>
+
+<div id="game"></div>
+
+<div id="message">
+Game Over<br><br>
+<button onclick="location.reload()">Play Again</button>
+</div>
+
+<script>
+
+const game=document.getElementById("game");
+
+let score=0;
+let time=30;
+let interval=1000;
+
+function createBalloon(){
+
+    if(time<=0) return;
+
+    const balloon=document.createElement("div");
+    balloon.className="balloon";
+
+    const colours=[
+        "#ff1744",
+        "#ff9100",
+        "#00e676",
+        "#2979ff",
+        "#e040fb",
+        "#ffea00"
+    ];
+
+    balloon.style.background=
+        colours[Math.floor(Math.random()*colours.length)];
+
+    balloon.style.left=Math.random()*(window.innerWidth-80)+"px";
+
+    balloon.onclick=function(){
+
+        score++;
+
+        document.getElementById("score").innerText=score;
+
+        balloon.remove();
+
+    };
+
+    game.appendChild(balloon);
+
+    setTimeout(()=>{
+        balloon.remove();
+    },6000);
+
+}
+
+let balloonSpawner=setInterval(()=>{
+
+    createBalloon();
+
+    if(score>10){
+        clearInterval(balloonSpawner);
+        balloonSpawner=setInterval(createBalloon,700);
+    }
+
+    if(score>20){
+        clearInterval(balloonSpawner);
+        balloonSpawner=setInterval(createBalloon,500);
+    }
+
+},interval);
+
+let timer=setInterval(()=>{
+
+    time--;
+
+    document.getElementById("time").innerText=time;
+
+    if(time<=0){
+
+        clearInterval(timer);
+        clearInterval(balloonSpawner);
+
+        document.getElementById("message").style.display="block";
+
+    }
+
+},1000);
+
+</script>
+
+</body>
+</html>
